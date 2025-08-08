@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Demo App</title>
+</head>
+<body>
+<h1 th:text="${driver != null ? 'Driver: ' + driver.driverName : 'Does not exist.'}"></h1>
+
+<a th:if="${driver != null}" th:href="@{'/drivers/edit'+${driver.id}}">Edit Driver</a>
+<a th:if="${driver != null}" th:href="@{'/drivers/delete'+${driver.id}}">Delete Driver</a>
+
+</body>
+</html>

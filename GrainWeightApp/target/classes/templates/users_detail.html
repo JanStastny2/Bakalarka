@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="cs" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail uživatele</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<main class="container main-content">
+    <h2 class="page-heading">Uživatel: <span th:text="${user.name}">Jméno</span></h2>
+
+    <div class="form-wrapper">
+        <p><strong>Uživatelské jméno:</strong> <span th:text="${user.username}">username</span></p>
+        <p><strong>Role:</strong> <span th:text="${user.role}">ROLE_USER</span></p>
+    </div>
+
+    <h2 class="page-heading">Záznamy vytvořené tímto uživatelem</h2>
+
+    <div class="list-container">
+        <table class="list-table">
+            <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Hrubá váha (kg)</th>
+                <th>Prázdná váha (kg)</th>
+                <th>Čistá váha (kg)</th>
+                <th>Řidič</th>
+                <th>Pole</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="rec : ${records}">
+                <td th:text="${#temporals.format(rec.date,'yyyy-MM-dd HH:mm')}">-</td>
+                <td th:text="${rec.grossWeight}">-</td>
+                <td th:text="${rec.tareWeight}">-</td>
+                <td th:text="${(rec.grossWeight ?: 0) - (rec.tareWeight ?: 0)}">-</td>
+                <td th:text="${rec.driverName}">-</td>
+                <td th:text="${rec.field.name}">-</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="buttons-wrapper">
+        <a th:href="@{/users}">
+            <button class="btn-back">← Zpět na seznam uživatelů</button>
+        </a>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>© 2025 Grain Weight App — Všechna práva vyhrazena.</p>
+    </div>
+</footer>
+
+</body>
+</html>

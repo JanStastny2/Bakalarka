@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="cs"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Seznam uživatelů – Grain Weight App</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<main class="container main-content">
+    <!-- Nadpis stránky -->
+    <h2 class="page-heading">Seznam uživatelů</h2>
+
+    <!-- Tlačítka -->
+    <div class="buttons-wrapper">
+        <a th:href="@{/users/add}">
+            <button class="btn-add">+ Přidat uživatele</button>
+        </a>
+        <a th:href="@{/home}">
+            <button class="btn-back">← Zpět na domovskou stránku</button>
+        </a>
+    </div>
+
+    <div class="list-container">
+        <table class="list-table">
+            <thead>
+            <tr>
+                <th>Jméno</th>
+                <th>Uživatelské jméno</th>
+                <th>Role</th>
+                <th>Akce</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}"
+                th:attr="data-href=@{'/users/' + ${user.id}}"
+                class="clickable-row">
+                <td th:text="${user.name}">Jméno</td>
+                <td th:text="${user.username}">uživatel123</td>
+                <td th:text="${#lists.isEmpty(user.role) ? '—' : user.role}">ROLE_USER</td>
+                <td class="non-clickable">
+                    <span th:if="${#authentication.name == user.username}"></span>
+                    <a th:if="${#authentication.name != user.username}"
+                       th:href="@{/users/delete/{id}(id=${user.id})}"
+                       onclick="return confirm('Opravdu chcete odstranit tohoto uživatele?');">
+                        Smazat
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>© 2025 Grain Weight App — Všechna práva vyhrazena.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".clickable-row").forEach(row => {
+            row.addEventListener("click", function (event) {
+                if (event.target.closest(".non-clickable")) return;
+                const href = row.getAttribute("data-href");
+                if (href) {
+                    window.location.href = href;
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

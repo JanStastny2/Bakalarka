@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="cs"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Grain Weight App</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="container header-content">
+        <div class="brand">
+            <h1 class="app-title">Grain Weight App</h1>
+            <p class="welcome-text">Vítej, <strong th:text="${#authentication.name}"></strong>!</p>
+        </div>
+        <div class="nav-cards-wrapper">
+            <div class="nav-cards">
+                <a class="nav-card"
+                   th:href="@{/weightrecords/}"
+                   title="Seznam vážení">
+                    <div class="card-icon">&#128200;</div>
+                    <div class="card-text">Seznam vážení</div>
+                </a>
+                <a class="nav-card"
+                   th:href="@{/weightrecords/new}"
+                   title="Nové vážení">
+                    <div class="card-icon">&#10133;</div>
+                    <div class="card-text">Nové vážení</div>
+                </a>
+                <a class="nav-card"
+                   th:href="@{/fields/}"
+                   title="Pole">
+                    <div class="card-icon">&#127806;</div>
+                    <div class="card-text">Pole</div>
+                </a>
+                <a class="nav-card"
+                   th:href="@{/drivers/}"
+                   title="Řidiči">
+                    <div class="card-icon">&#128663;</div>
+                    <div class="card-text">Řidiči</div>
+                </a>
+                <a class="nav-card"
+                   th:href="@{/users/}"
+                   sec:authorize="hasRole('ROLE_ADMIN')"
+                   title="Uživatelé">
+                    <div class="card-icon">&#128100;</div>
+                    <div class="card-text">Uživatelé</div>
+                </a>
+                <a class="nav-card"
+                   th:href="@{/admin}"
+                   sec:authorize="hasRole('ROLE_ADMIN')"
+                   title="Admin sekce">
+                    <div class="card-icon">&#9881;</div>
+                    <div class="card-text">Admin sekce</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="logout-wrapper">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Odhlásit se</button>
+            </form>
+        </div>
+
+    </div>
+</header>
+
+<main class="container main-content">
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>© 2025 Grain Weight App — Všechna práva vyhrazena.</p>
+    </div>
+</footer>
+
+</body>
+</html>

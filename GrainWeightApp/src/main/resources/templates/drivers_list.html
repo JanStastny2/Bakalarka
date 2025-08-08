@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="cs"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Seznam řidičů – Grain Weight App</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<main class="container main-content">
+    <h2 class="page-heading">Seznam řidičů</h2>
+
+    <div class="buttons-wrapper">
+        <a th:href="@{/drivers/add}">
+            <button class="btn-add">+ Přidat řidiče</button>
+        </a>
+        <a th:href="@{/home}">
+            <button class="btn-back">← Zpět na domovskou stránku</button>
+        </a>
+    </div>
+
+    <div class="list-container">
+        <table class="list-table">
+            <thead>
+            <tr>
+                <th>Jméno řidiče</th>
+                <th>Prázdná váha</th>
+                <th>Akce</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="driver : ${drivers}"
+                th:attr="data-href=@{'/drivers/edit/' + ${driver.id}}"
+                class="clickable-row">
+                <td th:text="${driver.driverName}">Řidič</td>
+                <td th:text="${driver.tareWeight} + ' kg'">0 kg</td>
+                <td class="non-clickable">
+                    <a th:href="@{/drivers/delete/{id}(id=${driver.id})}"
+                       onclick="return confirm('Opravdu chcete odstranit tohoto řidiče?');">
+                        Odstranit
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>© 2025 Grain Weight App — Všechna práva vyhrazena.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".clickable-row").forEach(row => {
+            row.addEventListener("click", function (event) {
+                if (event.target.closest(".non-clickable")) return;
+                const href = row.getAttribute("data-href");
+                if (href) {
+                    window.location.href = href;
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="cs"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Seznam vážení – Grain Weight App</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<main class="container main-content">
+    <!-- Nadpis stránky -->
+    <h2 class="page-heading">Seznam záznamů vážení</h2>
+
+    <!-- Tlačítka nahoře -->
+    <div class="buttons-wrapper">
+        <a th:href="@{/weightrecords/new}">
+            <button class="btn-add">+ Přidat nové vážení</button>
+        </a>
+        <a th:href="@{/home}">
+            <button class="btn-back">← Zpět na domovskou stránku</button>
+        </a>
+    </div>
+
+    <!-- Tabulka se záznamy vážení -->
+    <div class="list-container">
+        <table class="list-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Datum</th>
+                <th>Hrubá váha (kg)</th>
+                <th>Prázdná váha (kg)</th>
+                <th>Čistá váha (kg)</th>
+                <th>Řidič</th>
+                <th>Pole</th>
+                <th>Uživatel</th>
+                <th>Akce</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="rec : ${weightrecords}"
+                th:attr="data-href=@{'/weightrecords/edit/' + ${rec.id}}"
+                class="clickable-row">
+                <td th:text="${rec.id}">1</td>
+                <td th:text="${#temporals.format(rec.date,'yyyy-MM-dd HH:mm')}">Datum</td>
+                <td th:text="${rec.grossWeight}">0</td>
+                <td th:text="${rec.tareWeight}">0</td>
+                <td th:text="${(rec.grossWeight ?: 0.0) - (rec.tareWeight ?: 0)}">0</td>
+                <td th:text="${rec.driverName}">Řidič</td>
+                <td th:text="${rec.field.name}">Pole</td>
+                <td th:text="${rec.createdBy.username}">Uživatel</td>
+                <td class="non-clickable">
+                    <a th:href="@{/weightrecords/delete/{id}(id=${rec.id})}"
+                       onclick="return confirm('Opravdu chcete smazat tento záznam?');">
+                        Odstranit
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>© 2025 Grain Weight App — Všechna práva vyhrazena.</p>
+    </div>
+</footer>
+
+<!-- Klikací řádky s výjimkou buněk "Akce" -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".clickable-row").forEach(row => {
+            row.addEventListener("click", function (event) {
+                // Pokud klikl na něco uvnitř buňky s class="non-clickable", neprováděj redirect
+                if (event.target.closest(".non-clickable")) return;
+
+                const href = row.getAttribute("data-href");
+                if (href) {
+                    window.location.href = href;
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

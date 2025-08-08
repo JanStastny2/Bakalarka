@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="cs"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${weightrecord.id} != null ? 'Úprava vážení' : 'Nové vážení'"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="form-page">
+
+<main class="container main-content">
+    <div class="form-wrapper">
+        <h2 th:text="${weightrecord.id} != null ? 'Úprava vážení' : 'Nové vážení'"></h2>
+
+        <form method="post" th:action="@{/weightrecords/save}" th:object="${weightrecord}">
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="form-group">
+                <label for="dateInput">Datum</label>
+                <input type="datetime-local" th:field="*{date}" id="dateInput" />
+            </div>
+
+            <div class="form-group">
+                <label for="grossWeight">Hrubá váha (kg)</label>
+                <input type="number" step="10" th:field="*{grossWeight}" id="grossWeight" required th:min="0" />
+            </div>
+
+            <div class="form-group">
+                <label>Prázdná váha (kg)</label>
+                <div class="tare-display" id="tareWeightDisplay"></div>
+                <input type="hidden" th:field="*{tareWeight}" id="tareWeightInput" />
+            </div>
+
+            <div class="form-group">
+                <label for="driverSelect">Řidič</label>
+                <select id="driverSelect">
+                    <option th:each="drv : ${drivers}"
+                            th:value="${drv.driverName}"
+                            th:text="${drv.driverName}"
+                            th:attr="data-plate=${drv.licencePlate},data-tare=${drv.tareWeight}">
+                    </option>
+                </select>
+            </div>
+
+            <input type="hidden" th:field="*{driverName}" id="driverNameInput" />
+            <input type="hidden" th:field="*{licencePlate}" id="licencePlateInput" />
+
+            <div class="form-group">
+                <label for="field">Pole</label>
+                <select th:field="*{field.id}" id="field">
+                    <option th:each="fld : ${fields}" th:value="${fld.id}" th:text="${fld.name}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Uživatel</label>
+                <strong th:text="${#authentication.name}">user</strong>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Uložit</button>
+                <a th:href="@{/weightrecords}">Zpět</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    (function(){
+        const dateInput = document.getElementById('dateInput');
+        const now = new Date().toISOString().slice(0,16);
+        dateInput.value = now;
+
+        const select = document.getElementById('driverSelect');
+        const plateInput = document.getElementById('licencePlateInput');
+        const tareInput = document.getElementById('tareWeightInput');
+        const nameInput = document.getElementById('driverNameInput');
+        const display = document.getElementById('tareWeightDisplay');
+
+        function updateFields() {
+            const selected = select.options[select.selectedIndex];
+            nameInput.value = selected.value;
+            plateInput.value = selected.getAttribute('data-plate');
+            tareInput.value = selected.getAttribute('data-tare');
+            display.textContent = selected.getAttribute('data-tare') + " kg";
+        }
+
+        select.addEventListener('change', updateFields);
+        updateFields();
+    })();
+    /*]]>*/
+</script>
+
+</body>
+</html>

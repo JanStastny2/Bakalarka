@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="cs" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Přihlášení – Grain Weight App</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="login-page">
+
+<main class="auth-container">
+    <div class="auth-box">
+        <h1 class="auth-heading">Vítej zpět</h1>
+
+        <div th:if="${param.error}" class="auth-message error">
+            Neplatné uživatelské jméno nebo heslo.
+        </div>
+        <div th:if="${param.logout}" class="auth-message success">
+            Úspěšně odhlášeno.
+        </div>
+
+        <form th:action="@{/login}" method="post" class="auth-form">
+            <label for="username">Uživatelské jméno</label>
+            <input type="text" id="username" name="username" placeholder="uzivatel@example.com" required />
+
+            <label for="password">Heslo</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" required />
+
+            <button type="submit">Přihlásit se</button>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>
