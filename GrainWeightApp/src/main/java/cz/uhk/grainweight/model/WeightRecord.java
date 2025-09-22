@@ -1,9 +1,11 @@
 package cz.uhk.grainweight.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@JsonIgnoreProperties({"createdBy", "field"})
 @Table(name = "weightRecords")
 public class WeightRecord {
 
@@ -20,16 +22,15 @@ public class WeightRecord {
     private String licencePlate;
     private String driverContact;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true)
     private User createdBy;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "field_id")
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "field_id", nullable = true)
     private Field field;
 
 
-    // Gettery a settery
     public long getId() {
         return id;
     }

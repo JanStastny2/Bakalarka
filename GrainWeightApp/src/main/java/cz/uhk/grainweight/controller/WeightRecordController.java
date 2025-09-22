@@ -51,11 +51,9 @@ public class WeightRecordController {
     public String save(@ModelAttribute("weightrecord") WeightRecord record,
                        @AuthenticationPrincipal UserDetails userDetails) {
 
-        // Získání přihlášeného uživatele
         User user = userService.findByUsername(userDetails.getUsername());
         record.setCreatedBy(user);
 
-        // Pokud není datum vyplněno, nastav aktuální
         if (record.getDate() == null) {
             record.setDate(LocalDateTime.now());
         }

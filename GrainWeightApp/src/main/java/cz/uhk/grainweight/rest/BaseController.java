@@ -1,41 +1,75 @@
 package cz.uhk.grainweight.rest;
 
 import cz.uhk.grainweight.model.ApiResponse;
-import cz.uhk.grainweight.service.UserService;
+import cz.uhk.grainweight.model.processing.ProcessingResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
 import java.util.function.Supplier;
 
 public abstract class BaseController {
-    protected <T> ResponseEntity<ApiResponse<T>> wrapResponse(Supplier<T> action, HttpStatus successStatus, String successMessage) {
-        long start = System.nanoTime();
+    protected <T> ResponseEntity<ApiResponse<T>> wrapResponse(
+            Supplier<T> action,
+            HttpStatus successStatus,
+            String successMessage
+    ) {
+        long t0 = System.nanoTime();
         try {
-            T result = action.get();
-            long duration = (System.nanoTime() - start) / 1_000_000;
+            T data = action.get();
+            long durationMs = (System.nanoTime() - t0) / 1_000_000;
 
-            ApiResponse<T> response = new ApiResponse<>(
-                    successStatus.value(),
-                    duration,
-                    result,
-                    successMessage
-            );
+            ApiResponse<T> body = ApiResponse.<T>builder()
+                    .status(successStatus.value())
+                    .durationMs(durationMs)
+                    .data(data)
+                    .message(successMessage)
+                    .build();
 
-            return new ResponseEntity<>(response, successStatus);
+            return ResponseEntity.status(successStatus).body(body);
+        } catch (RuntimeException ex) {
+            long durationMs = (System.nanoTime() - t0) / 1_000_000;
+
+            ApiResponse<T> body = ApiResponse.<T>builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .durationMs(durationMs)
+                    .message(ex.getMessage())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
         }
-        catch (Exception e) {
-            long duration = (System.nanoTime() - start) / 1_000_000;
-            ApiResponse<T> errorResponse = new ApiResponse<>(
-                    HttpStatus.BAD_REQUEST.value(),
-                    duration,
-                    null,
-                    e.getMessage()
-            );
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-        }
-
     }
 
+    protected <T> ResponseEntity<ApiResponse<T>> wrapResponseProcessed(
+            Supplier<ProcessingResult<T>> action,
+            HttpStatus successStatus,
+            String successMessage) {
 
+        long t0 = System.nanoTime();
+        try {
+            ProcessingResult<T> pr = action.get();
+            long durationMs = (System.nanoTime() - t0) / 1_000_000;
+
+            ApiResponse<T> body = ApiResponse.<T>builder()
+                    .status(successStatus.value())
+                    .durationMs(durationMs)
+                    .data(pr.getData())
+                    .message(successMessage)
+                    .serverProcessingMs(pr.getServerProcessingMs())
+                    .queueWaitMs(pr.getQueueWaitMs())
+                    .build();
+
+            return ResponseEntity.status(successStatus)
+                    .header("X-Server-Processing-Ms", String.valueOf(pr.getServerProcessingMs()))
+                    .header("X-Queue-Wait-Ms", String.valueOf(pr.getQueueWaitMs()))
+                    .body(body);
+        } catch (RuntimeException ex) {
+            long durationMs = (System.nanoTime() - t0) / 1_000_000;
+            ApiResponse<T> body = ApiResponse.<T>builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .durationMs(durationMs)
+                    .message(ex.getMessage())
+                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        }
+    }
 }

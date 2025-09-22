@@ -36,6 +36,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((requests) -> requests // Change to authorizeHttpRequests
                         .requestMatchers("/", "/home").authenticated()
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/fields/edit/", "fields/delete/", "fields/new", "fields/save", "users/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/css/**").permitAll()
